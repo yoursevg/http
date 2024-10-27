@@ -8,31 +8,42 @@ import (
 )
 
 type MessageStruct struct {
-	Message string `json:"message"`
+	Text string `json:"text"`
 }
 
-var message string
-
 func GetHelloHandler(w http.ResponseWriter, r *http.Request) {
-	if message == "" {
-		fmt.Fprintln(w, "Hello, world!")
-	} else {
-		fmt.Fprintf(w, "Hello, %s!\n", message)
-	}
+	fmt.Println(DB.Find(&MessageStruct{}))
 }
 
 func PostHelloHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var messageJSON MessageStruct
-	err := decoder.Decode(&messageJSON)
+
+	var messageStruct MessageStruct
+	err := decoder.Decode(&messageStruct)
 	if err != nil {
 		panic(err)
 	}
-	message = messageJSON.Message
+
+	message := &Message{
+		Text: messageStruct.Text,
+	}
+
+	//Добавляем запись в БД
+	result := DB.Create(&message)
+	if result.Error != nil {
+		panic(result.Error)
+	}
+
 	fmt.Fprintln(w, "New message: ", message)
 }
 
 func main() {
+	// Вызываем метод InitDB() из файла db.go
+	InitDB()
+
+	// Автоматическая миграция модели Message
+	DB.AutoMigrate(&Message{})
+
 	router := mux.NewRouter()
 	router.HandleFunc("/api/hello", GetHelloHandler).Methods("GET")
 	router.HandleFunc("/api/hello", PostHelloHandler).Methods("POST")
