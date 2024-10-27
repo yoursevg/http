@@ -12,7 +12,14 @@ type MessageStruct struct {
 }
 
 func GetHelloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(DB.Find(&MessageStruct{}))
+	var msgs []Message
+	DB.Find(&msgs)
+
+	// Конвертируем данные в JSON и отправляем в ответ
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(msgs); err != nil {
+		http.Error(w, "Failed to encode messages", http.StatusInternalServerError)
+	}
 }
 
 func PostHelloHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +41,7 @@ func PostHelloHandler(w http.ResponseWriter, r *http.Request) {
 		panic(result.Error)
 	}
 
-	fmt.Fprintln(w, "New message: ", message)
+	fmt.Fprintln(w, "New message: ", message.Text)
 }
 
 func main() {
