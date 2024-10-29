@@ -20,5 +20,8 @@ migrate-down:
 migrate-force:
 	migrate -path ./migrations -database $(DB_DSN) force 20241029005909
 
+gen:
+	oapi-codegen -config openapi/.openapi -include-tags messages -package messages openapi/openapi.yaml > ./internal/web/messages/api.gen.go
+
 run:
 	go run cmd/app/main.go
