@@ -1,6 +1,8 @@
 package messagesService
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type MessageRepository interface {
 	// CreateMessage - Передаем в функцию message типа Message из orm.go
@@ -43,8 +45,15 @@ func (r *messageRepository) UpdateMessageByID(id int, newMessage Message) (Messa
 	var msg Message
 	msg.ID = uint(id)
 	err := r.db.First(&msg).Error
+	if err != nil {
+		return Message{}, err
+	}
 	msg.Text = newMessage.Text
 	err = r.db.Save(&msg).Error
+	if err != nil {
+		return Message{}, err
+	}
+
 	return msg, err
 }
 

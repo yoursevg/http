@@ -50,19 +50,16 @@ func (h *Handler) PutMessages(ctx context.Context, request messages.PutMessagesR
 	if err != nil {
 		return nil, err
 	}
-
 	messageToUpdate := messagesService.Message{Text: *request.Body.Text}
 	//Выполняем обработку
 	updatedMessage, err := h.Service.UpdateMessageByID(int(msgIdU64), messageToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
 	response := messages.PutMessages200JSONResponse{
 		Id:   &updatedMessage.ID,
 		Text: &updatedMessage.Text,
 	}
-
 	return response, nil
 }
 
@@ -72,13 +69,11 @@ func (h *Handler) DeleteMessages(_ context.Context, request messages.DeleteMessa
 	if err != nil {
 		return nil, err
 	}
-
 	//Выполняем обработку
 	err = h.Service.DeleteMessageByID(int(msgIdU64))
 	if err != nil {
 		return nil, err
 	}
-
 	return messages.DeleteMessages204Response{}, err
 }
 
