@@ -3,51 +3,51 @@ info:
   title: API
   version: 1.0.0
 paths:
-  /messages:
+  /tasks:
     get:
-      summary: Get all messages
+      summary: Get all tasks
       tags:
-        - messages
+        - tasks
       responses:
         '200':
-          description: A list of messages
+          description: A list of tasks
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Message'
+                  $ref: '#/components/schemas/Task'
     post:
-      summary: Create a new message
+      summary: Create a new task
       tags:
-        - messages
+        - tasks
       requestBody:
-        description: The message to create
+        description: New task to create
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: '#/components/schemas/Task'
       responses:
         '201':
-          description: The created message
+          description: The created task
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: '#/components/schemas/Task'
     put:
-      summary: Update message text by ID
+      summary: Update task ID
       tags:
-        - messages
+        - tasks
       parameters:
         - name: id
           in: query
           required: true
           schema:
             type: string
-          description: ID of the message to update
+          description: ID of the task to update
       requestBody:
-        description: Update for message text
+        description: Update task text and IsDone flag
         required: true
         content:
           application/json:
@@ -57,36 +57,39 @@ paths:
                 text:
                   type: string
                   description: The updated text of the message
+                is_done:
+                  type: boolean
+                  description: Updated is_done flag
       responses:
         '200':
           description: Updated message
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: '#/components/schemas/Task'
         '404':
           description: Message not found
 
     delete:
-      summary: Delete existing message by ID
+      summary: Delete existing task by ID
       tags:
-        - messages
+        - tasks
       parameters:
         - name: id
           in: query
           required: true
           schema:
             type: string
-          description: ID of the message to delete
+          description: ID of the task to delete
       responses:
         '204':
-          description: Deleted message
+          description: Deleted task
         '404':
-          description: Message not found
+          description: Task not found
 
 components:
   schemas:
-    Message:
+    Task:
       type: object
       properties:
         id:
@@ -94,3 +97,7 @@ components:
           format: uint
         text:
           type: string
+        is_done:
+          type: boolean
+      required:
+        - text

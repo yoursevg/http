@@ -6,19 +6,19 @@ import (
 	"log"
 	"mux/internal/database"
 	"mux/internal/handlers"
-	"mux/internal/messagesService"
-	"mux/internal/web/messages"
+	"mux/internal/taskService"
+	"mux/internal/web/tasks"
 )
 
 func main() {
 	database.InitDB()
-	err := database.DB.AutoMigrate(&messagesService.Message{})
+	err := database.DB.AutoMigrate(&taskService.Task{})
 	if err != nil {
 		log.Fatalf("error with db migration: %s", err)
 	}
 
-	repo := messagesService.NewMessageRepository(database.DB)
-	service := messagesService.NewService(repo)
+	repo := taskService.NewTaskRepository(database.DB)
+	service := taskService.NewService(repo)
 
 	handler := handlers.NewHandler(service)
 
@@ -29,9 +29,8 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// Прикол для работы в echo. Передаем и регистрируем хендлер в echo
-	strictHandler := messages.NewStrictHandler(handler, nil) // тут будет ошибка
-	messages.RegisterHandlers(e, strictHandler)
+	strictHandler := tasks.NewStrictHandler(handler, nil)
+	tasks.RegisterHandlers(e, strictHandler)
 
 	if err := e.Start(":8080"); err != nil {
 		log.Fatalf("failed to start with err: %v", err)
