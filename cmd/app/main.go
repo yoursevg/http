@@ -7,20 +7,21 @@ import (
 	"mux/internal/database"
 	"mux/internal/handlers"
 	"mux/internal/taskService"
+	"mux/internal/userService"
 	"mux/internal/web/tasks"
+	"mux/internal/web/users"
 )
 
 func main() {
 	database.InitDB()
-	err := database.DB.AutoMigrate(&taskService.Task{})
-	if err != nil {
-		log.Fatalf("error with db migration: %s", err)
-	}
 
-	repo := taskService.NewTaskRepository(database.DB)
-	service := taskService.NewService(repo)
+	tasksRepo := taskService.NewTaskRepository(database.DB)
+	tasksService := taskService.NewService(tasksRepo)
+	tasksHandler := handlers.NewTaskHandler(tasksService)
 
-	handler := handlers.NewHandler(service)
+	usersRepo := userService.NewUserRepository(database.DB)
+	usersService := userService.NewService(usersRepo)
+	usersHandler := handlers.NewUserHandler(usersService)
 
 	// Инициализируем echo
 	e := echo.New()
@@ -29,8 +30,11 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	strictHandler := tasks.NewStrictHandler(handler, nil)
-	tasks.RegisterHandlers(e, strictHandler)
+	strictTasksHandler := tasks.NewStrictHandler(tasksHandler, nil)
+	tasks.RegisterHandlers(e, strictTasksHandler)
+
+	strictUsersHandler := users.NewStrictHandler(usersHandler, nil)
+	users.RegisterHandlers(e, strictUsersHandler)
 
 	if err := e.Start(":8080"); err != nil {
 		log.Fatalf("failed to start with err: %v", err)

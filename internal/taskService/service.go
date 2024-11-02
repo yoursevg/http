@@ -12,14 +12,14 @@ func (s *TaskService) GetAllTasks() ([]Task, error) {
 	return s.repo.GetAllTasks()
 }
 
-func (s *TaskService) CreateTask(message Task) (Task, error) {
-	return s.repo.CreateTask(message)
+func (s *TaskService) CreateTask(task Task) (Task, error) {
+	return s.repo.CreateTask(task)
 }
 
-func (s *TaskService) UpdateTaskByID(id uint, message Task) (Task, error) {
-	return s.repo.UpdateTaskByID(id, message)
+func (s *TaskService) UpdateTaskByID(id uint, task Task) (Task, error) {
+	return s.repo.UpdateTaskByID(id, task)
 }
 
-func (s *TaskService) DeleteTaskByID(id int) error {
+func (s *TaskService) DeleteTaskByID(id uint) error {
 	return s.repo.DeleteTaskByID(id)
 }

@@ -1,6 +1,6 @@
 # Makefile для создания миграций
 
-# Переменные которые будут использоваться в наших командах (Таргетах)
+# Переменные которые будут использоваться в командах (Таргетах)
 DB_DSN := "postgres://user:pass@localhost:5432/db?sslmode=disable"
 MIGRATE := migrate -path ./migrations -database $(DB_DSN) -verbose
 
@@ -20,8 +20,11 @@ migrate-down:
 migrate-force:
 	migrate -path ./migrations -database $(DB_DSN) force 20241102162031
 
-gen:
+gen-tasks-api:
 	oapi-codegen -config openapi/.openapi -include-tags tasks -package tasks openapi/openapi.yaml > ./internal/web/tasks/api.gen.go
+
+gen-users-api:
+	oapi-codegen -config openapi/.openapi -include-tags users -package users openapi/openapi.yaml > ./internal/web/users/api.gen.go
 
 lint:
 	golangci-lint run --out-format=colored-line-number
